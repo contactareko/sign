@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#164e50">
+<meta name="referrer" content="no-referrer">
+<title>امضای من | خروجی PNG و PDF</title>
+<style>
+  :root{color-scheme:light;--ink:#163b3d;--muted:#5b7375;--accent:#146b64;--line:#d9e5e2;--paper:#fff;--bg:#eef4f1}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,"Segoe UI",sans-serif;line-height:1.8;padding:28px 16px 40px}
+  main{max-width:800px;margin:auto}
+  header{margin:0 4px 20px}
+  .eyebrow{font-size:12px;color:var(--accent);font-weight:bold;margin:0 0 4px}
+  h1{font-size:28px;line-height:1.5;margin:0 0 8px;letter-spacing:-.6px}
+  .sub{margin:0;color:var(--muted);font-size:14px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 12px 40px #163b3d08}
+  .topline{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;font-size:14px}
+  .badge{font-size:11px;padding:3px 10px;border-radius:20px;background:#eaf5ee;color:#336946;white-space:nowrap}
+  .padwrap{position:relative;border:1.5px dashed #b7cbc5;border-radius:16px;overflow:hidden;background:white}
+  #pad{display:block;width:100%;height:auto;aspect-ratio:5 / 3;touch-action:none;cursor:crosshair;user-select:none;-webkit-user-select:none}
+  .hint{position:absolute;inset:0;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;color:#8a9f9b;pointer-events:none}
+  .hint span:first-child{font-size:20px}
+  .hint small{font-size:12px}
+  .baseline{position:absolute;bottom:22%;left:9%;right:9%;border-bottom:1px solid #e3eae7;pointer-events:none}
+  .tools{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;margin:16px 0 20px}
+  .width,.edit{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .label{font-size:12px;color:var(--muted);margin-left:4px}
+  button,.button{font:inherit;line-height:1.5;font-size:13px;border:1px solid transparent;border-radius:10px;padding:10px 14px;background:#edf3f0;color:var(--ink);cursor:pointer;text-decoration:none;text-align:center;display:inline-flex;justify-content:center;align-items:center;gap:6px;min-height:42px;-webkit-tap-highlight-color:transparent}
+  button:hover,.button:hover{filter:brightness(.96)}
+  button:disabled{opacity:.4;cursor:default}
+  button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible,canvas:focus-visible{outline:3px solid #bc7831;outline-offset:3px}
+  .width button{font-size:12px;padding:8px 10px}
+  .width button[aria-pressed="true"]{background:var(--ink);color:white}
+  .export{border-top:1px solid var(--line);padding-top:18px}
+  .option{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:14px;cursor:pointer;width:fit-content}
+  input{width:18px;height:18px;accent-color:var(--accent)}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .actions button{font-size:15px;font-weight:bold;min-height:50px}
+  .primary{background:var(--accent);color:white}
+  .secondary{background:white;color:var(--accent);border-color:#a5c5bc}
+  .micro{font-size:11px;color:var(--muted);margin:10px 0 0}
+  #status{font-size:13px;margin:12px 0 0;min-height:24px;color:var(--accent)}
+  #status.error{color:#a63625}
+  .result{margin-top:18px;border:1px solid var(--line);border-radius:18px;padding:18px;background:#fff}
+  .result h2{font-size:16px;margin:0 0 8px}
+  .result p{font-size:12px;color:var(--muted);margin:8px 0}
+  .preview{direction:ltr;display:flex;align-items:center;justify-content:center;min-height:120px;padding:20px;border-radius:10px;background-color:#fafcfb;background-image:linear-gradient(45deg,#e4ece8 25%,transparent 25%),linear-gradient(-45deg,#e4ece8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e4ece8 75%),linear-gradient(-45deg,transparent 75%,#e4ece8 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+  #preview{max-width:100%;max-height:240px;object-fit:contain}
+  .result-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .result-actions>*{flex:1;white-space:nowrap}
+  details{margin:18px 4px 0;font-size:12px;color:var(--muted)}
+  summary{cursor:pointer;font-weight:bold;color:var(--ink);padding:8px 0}
+  ol{padding-right:22px;margin:8px 0}
+  li{margin:8px 0}
+  footer{font-size:11px;text-align:center;color:var(--muted);margin:20px 0 0}
+  [hidden]{display:none!important}
+  noscript p{padding:16px;border:1px solid #cc7760;background:#fff0ea;border-radius:12px}
+  @media(max-width:520px){body{padding:20px 12px 30px}.card{padding:16px;border-radius:20px}h1{font-size:25px}.topline{font-size:12px}.tools{gap:10px}.actions{gap:8px}.actions button{font-size:13px;padding:12px 8px}.hint span:first-child{font-size:17px}.hint small{font-size:10px}.result-actions>*{flex-basis:40%}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">با انگشت، قلم یا موس</p>
+    <h1>امضای شما، آمادهٔ دریافت</h1>
+    <p class="sub">در کادر زیر امضا کنید و فایل PNG یا PDF بگیرید.</p>
+  </header>
+  <noscript><p>این ابزار به جاوااسکریپت نیاز دارد. فایل HTML را دانلود کنید و در یک مرورگر مانند Chrome، Safari یا Edge باز کنید.</p></noscript>
+  <section class="card" aria-label="ابزار ثبت امضا">
+    <div class="topline"><strong>۱. اینجا امضا کنید</strong><span class="badge">آفلاین · روی دستگاه شما</span></div>
+    <div class="padwrap">
+      <canvas id="pad" width="1000" height="600" aria-label="کادر رسم امضا با موس، قلم یا لمس">مرورگر شما از کادر رسم امضا پشتیبانی نمی‌کند.</canvas>
+      <div class="baseline"></div>
+      <div class="hint" id="hint"><span>محل امضای شما</span><small>خط راهنما در خروجی دیده نمی‌شود</small></div>
+    </div>
+    <div class="tools">
+      <div class="width" role="group" aria-label="ضخامت قلم">
+        <span class="label">ضخامت</span>
+        <button type="button" data-width="4" aria-pressed="false">نازک</button>
+        <button type="button" data-width="7" aria-pressed="true">معمولی</button>
+        <button type="button" data-width="11" aria-pressed="false">ضخیم</button>
+      </div>
+      <div class="edit"><button type="button" id="undo" disabled>برگشت</button><button type="button" id="clear" disabled>پاک کردن</button></div>
+    </div>
+    <div class="export">
+      <label class="option"><input type="checkbox" id="white">زمینهٔ PNG سفید باشد</label>
+      <div class="actions">
+        <button type="button" id="png" class="primary" disabled>دریافت PNG</button>
+        <button type="button" id="pdf" class="secondary" disabled>دریافت PDF</button>
+      </div>
+      <p class="micro">PNG به‌صورت پیش‌فرض زمینهٔ شفاف دارد. PDF با اندازهٔ امضا و کیفیت برداری ساخته می‌شود.</p>
+      <p id="status" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+  <section class="result" id="result" aria-labelledby="result-title" hidden>
+    <h2 id="result-title">۲. فایل شما آماده است</h2>
+    <div class="preview"><img id="preview" alt="پیش‌نمایش امضای خروجی"></div>
+    <p id="file-info" dir="auto"></p>
+    <div class="result-actions">
+      <a id="download" class="button primary">ذخیرهٔ فایل</a>
+      <a id="open" class="button secondary" target="_blank" rel="noopener">باز کردن فایل</a>
+      <button type="button" id="share" class="secondary" hidden>اشتراک‌گذاری فایل</button>
+    </div>
+    <p>اگر دانلود شروع نشد، «ذخیرهٔ فایل» یا «باز کردن فایل» را بزنید. برای PNG در گوشی، نگه‌داشتن انگشت روی تصویر هم ممکن است گزینهٔ ذخیره را نشان دهد. برای PDF از منوی مرورگر یا اشتراک‌گذاری، گزینهٔ ذخیره در فایل‌ها را انتخاب کنید.</p>
+    <p>برای حفظ شفافیت و کیفیت PNG در تلگرام، آن را به‌صورت «فایل / Document» بفرستید.</p>
+  </section>
+  <details open>
+    <summary>باز کردن این ابزار از تلگرام</summary>
+    <ol>
+      <li>فایل <b dir="ltr">signature-pad.html</b> را به‌صورت فایل در تلگرام بفرستید.</li>
+      <li>گیرنده ابتدا آن را دانلود کند و با مرورگر باز کند. اگر پیش‌نمایش تلگرام دکمه‌ها را اجرا نکرد، فایل را در دستگاه ذخیره کند و از گزینهٔ «باز کردن با / Open with» استفاده کند. بسته به گوشی و نسخهٔ برنامه، امکان باز کردن HTML محلی متفاوت است.</li>
+      <li>پس از رسم امضا، PNG یا PDF را دریافت و فایل خروجی را ارسال کند. اگر گوشی اجازهٔ اجرای فایل HTML را نمی‌دهد، از رایانه استفاده کند.</li>
+    </ol>
+  </details>
+  <footer>این ابزار امضای شما را به سرور نمی‌فرستد و ذخیرهٔ دائمی نمی‌کند. با بستن یا تازه‌کردن صفحه، رسم فعلی از بین می‌رود.</footer>
+</main>
+<script>
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const canvas = $('pad'), ctx = canvas.getContext('2d');
+  const logicalWidth = 1000, logicalHeight = 600;
+  let strokes = [], current = null, pointerId = null, penWidth = 7, busy = false;
+  let output = null, fileURL = null, previewURL = null;
+
+  function status(message, error = false) {
+    $('status').textContent = message;
+    $('status').classList.toggle('error', error);
+  }
+  function updateControls() {
+    ['undo', 'clear', 'png', 'pdf'].forEach(id => { $(id).disabled = busy || !strokes.length; });
+    $('hint').hidden = strokes.length > 0;
+  }
+  function trace(c, points) {
+    c.beginPath();
+    c.moveTo(points[0][0], points[0][1]);
+    if (points.length === 1) c.lineTo(points[0][0] + .02, points[0][1]);
+    for (let i = 1; i < points.length - 1; i++) {
+      c.quadraticCurveTo(points[i][0], points[i][1], (points[i][0] + points[i+1][0])/2, (points[i][1] + points[i+1][1])/2);
+    }
+    if (points.length > 1) c.lineTo(...points[points.length - 1]);
+    c.stroke();
+  }
+  function draw(c, items) {
+    c.lineCap = 'round'; c.lineJoin = 'round'; c.strokeStyle = '#101817';
+    items.forEach(stroke => { c.lineWidth = stroke.width; trace(c, stroke.points); });
+  }
+  function redraw() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(canvas.width/logicalWidth, 0, 0, canvas.height/logicalHeight, 0, 0);
+    draw(ctx, strokes);
+    updateControls();
+  }
+  function resize() {
+    const rect = canvas.getBoundingClientRect(), ratio = Math.min(window.devicePixelRatio || 1, 3);
+    canvas.width = Math.max(1, Math.round(rect.width * ratio));
+    canvas.height = Math.max(1, Math.round(rect.width * logicalHeight/logicalWidth * ratio));
+    redraw();
+  }
+  function point(event) {
+    const r = canvas.getBoundingClientRect();
+    return [Math.max(0, Math.min(logicalWidth, (event.clientX-r.left)/r.width*logicalWidth)),
+      Math.max(0, Math.min(logicalHeight, (event.clientY-r.top)/r.height*logicalHeight))];
+  }
+  function resetOutput() {
+    $('result').hidden = true;
+    $('preview').removeAttribute('src');
+    ['download', 'open'].forEach(id => $(id).removeAttribute('href'));
+    if (fileURL) URL.revokeObjectURL(fileURL);
+    if (previewURL) URL.revokeObjectURL(previewURL);
+    fileURL = previewURL = output = null;
+  }
+  function changed() { resetOutput(); status(''); }
+  function finish(event) {
+    if (event && event.pointerId !== pointerId) return;
+    const id = pointerId;
+    current = null; pointerId = null;
+    if (id !== null && canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
+  }
+  canvas.addEventListener('pointerdown', event => {
+    if (busy || pointerId !== null || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    event.preventDefault();
+    changed();
+    pointerId = event.pointerId;
+    canvas.setPointerCapture(pointerId);
+    current = {width:penWidth, points:[point(event)]};
+    strokes.push(current); redraw();
+  });
+  canvas.addEventListener('pointermove', event => {
+    if (!current || event.pointerId !== pointerId) return;
+    event.preventDefault();
+    let events = event.getCoalescedEvents ? event.getCoalescedEvents() : [];
+    if (!events.length) events = [event];
+    events.forEach(e => current.points.push(point(e)));
+    redraw();
+  });
+  canvas.addEventListener('pointerup', event => {
+    if (current && event.pointerId === pointerId) current.points.push(point(event));
+    finish(event); redraw();
+  });
+  canvas.addEventListener('pointercancel', finish);
+  canvas.addEventListener('lostpointercapture', finish);
+  window.addEventListener('blur', () => finish());
+  $('undo').onclick = () => { finish(); strokes.pop(); changed(); redraw(); };
+  $('clear').onclick = () => { finish(); strokes = []; changed(); redraw(); };
+  document.querySelectorAll('[data-width]').forEach(button => {
+    button.onclick = () => {
+      penWidth = Number(button.dataset.width);
+      document.querySelectorAll('[data-width]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+    };
+  });
+  $('white').onchange = changed;
+
+  function bounds(items) {
+    let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
+    items.forEach(s => s.points.forEach(([x,y]) => {
+      left = Math.min(left, x-s.width/2); top = Math.min(top, y-s.width/2);
+      right = Math.max(right, x+s.width/2); bottom = Math.max(bottom, y+s.width/2);
+    }));
+    return [left-18, top-18, right+18, bottom+18];
+  }
+  function pngBlob(items, box, white) {
+    const [x0,y0,x1,y1] = box, scale = 3;
+    const c = document.createElement('canvas');
+    c.width = Math.ceil((x1-x0)*scale); c.height = Math.ceil((y1-y0)*scale);
+    const g = c.getContext('2d');
+    if (white) { g.fillStyle = '#fff'; g.fillRect(0,0,c.width,c.height); }
+    g.setTransform(scale,0,0,scale,-x0*scale,-y0*scale);
+    draw(g, items);
+    return new Promise((resolve,reject) => c.toBlob(blob => blob ? resolve(blob) : reject(new Error('PNG encoding failed')), 'image/png'));
+  }
+  function pdfBlob(items, box) {
+    const [x0,y0,x1,y1] = box, scale = .6;
+    const f = v => Number(v).toFixed(3);
+    const X = x => f((x-x0)*scale), Y = y => f((y1-y)*scale);
+    let content = '0.063 0.094 0.090 RG 1 J 1 j\n';
+    items.forEach(s => {
+      const p = s.points;
+      content += `${f(s.width*scale)} w\n${X(p[0][0])} ${Y(p[0][1])} m\n`;
+      if (p.length === 1) content += `${X(p[0][0]+.02)} ${Y(p[0][1])} l\n`;
+      let last = p[0];
+      for (let i=1;i<p.length-1;i++) {
+        const mid = [(p[i][0]+p[i+1][0])/2, (p[i][1]+p[i+1][1])/2];
+        const a = [last[0]+2/3*(p[i][0]-last[0]), last[1]+2/3*(p[i][1]-last[1])];
+        const b = [mid[0]+2/3*(p[i][0]-mid[0]), mid[1]+2/3*(p[i][1]-mid[1])];
+        content += `${X(a[0])} ${Y(a[1])} ${X(b[0])} ${Y(b[1])} ${X(mid[0])} ${Y(mid[1])} c\n`;
+        last = mid;
+      }
+      if (p.length > 1) content += `${X(p[p.length-1][0])} ${Y(p[p.length-1][1])} l\n`;
+      content += 'S\n';
+    });
+    // Every character below is ASCII, so string lengths equal PDF byte offsets.
+    const objects = [
+      '<< /Type /Catalog /Pages 2 0 R >>',
+      '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${f((x1-x0)*scale)} ${f((y1-y0)*scale)}] /Contents 4 0 R /Resources << >> >>`,
+      `<< /Length ${content.length} >>\nstream\n${content}endstream`
+    ];
+    let pdf = '%PDF-1.4\n';
+    const offsets = [];
+    objects.forEach((object,i) => { offsets.push(pdf.length); pdf += `${i+1} 0 obj\n${object}\nendobj\n`; });
+    const xref = pdf.length;
+    pdf += `xref\n0 5\n0000000000 65535 f \n${offsets.map(n => String(n).padStart(10,'0')+' 00000 n \n').join('')}trailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+    return new Blob([pdf], {type:'application/pdf'});
+  }
+  async function exportFile(format) {
+    if (!strokes.length || busy) return;
+    finish(); busy = true; updateControls();
+    $('white').disabled = true;
+    status('در حال آماده‌سازی فایل…');
+    try {
+      const items = strokes.map(s => ({width:s.width,points:s.points.map(p => [...p])}));
+      const box = bounds(items), white = format === 'pdf' || $('white').checked;
+      const image = await pngBlob(items, box, white);
+      const blob = format === 'png' ? image : pdfBlob(items, box);
+      const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\..+/, '').replace('T','-');
+      const name = `signature-${stamp}.${format}`;
+      resetOutput();
+      output = {blob,name}; fileURL = URL.createObjectURL(blob); previewURL = URL.createObjectURL(image);
+      $('preview').src = previewURL;
+      $('file-info').textContent = `${format.toUpperCase()} · ${Math.max(1, Math.round(blob.size/1024))} KB · ${name}`;
+      $('download').href = fileURL; $('download').download = name;
+      $('open').href = fileURL;
+      let shareable = false;
+      try { shareable = !!(navigator.share && navigator.canShare && navigator.canShare({files:[new File([blob],name,{type:blob.type})]})); } catch (_) {}
+      $('share').hidden = !shareable;
+      $('result').hidden = false;
+      status('فایل آماده شد. اگر دانلود شروع نشد، از دکمه‌های زیر استفاده کنید.');
+      // Keep the preview and explicit save/open links available on mobile browsers.
+      $('download').click();
+      $('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+    } catch (error) {
+      status('ساخت فایل انجام نشد. دوباره امتحان کنید یا فایل HTML را در مرورگر دیگری باز کنید.', true);
+      console.error(error);
+    } finally {
+      busy = false; $('white').disabled = false; updateControls();
+    }
+  }
+  $('png').onclick = () => exportFile('png');
+  $('pdf').onclick = () => exportFile('pdf');
+  $('share').onclick = async () => {
+    if (!output || !navigator.share) return;
+    const {blob,name} = output;
+    try { await navigator.share({files:[new File([blob],name,{type:blob.type})]}); }
+    catch (error) { if (error.name !== 'AbortError') status('اشتراک‌گذاری انجام نشد؛ فایل را ذخیره کنید و از داخل تلگرام بفرستید.', true); }
+  };
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
+  else window.addEventListener('resize', resize);
+  resize();
+})();
+</script>
+</body>
+</html>
